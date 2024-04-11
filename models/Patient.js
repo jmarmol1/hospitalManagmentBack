@@ -12,9 +12,14 @@ const PatientSchema = new mongoose.Schema({
         respiratoryRate: String,
         date: Date
     }],
-    commonSigns: [{
-        COVID19: String 
-    }]
+    commonSigns: {
+        fever: Boolean,
+        cough: Boolean,
+        fatigue: Boolean,
+        headache: Boolean,
+        bodyAche:Boolean
+
+    }
 });
 
 const PatientModel = mongoose.model('patients', PatientSchema);
