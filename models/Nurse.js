@@ -7,6 +7,17 @@ const NurseSchema = new mongoose.Schema({
     email: String
 });
 
+NurseSchema.pre('save', async function(next){
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+
+})
+
+
+
+
+
 const NurseModel = mongoose.model('nurses', NurseSchema);
 
 module.exports = NurseModel;

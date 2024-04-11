@@ -22,6 +22,13 @@ const PatientSchema = new mongoose.Schema({
     }
 });
 
+PatientSchema.pre('save', async function(next){
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+
+})
+
 const PatientModel = mongoose.model('patients', PatientSchema);
 
 module.exports = PatientModel;
