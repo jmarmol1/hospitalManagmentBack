@@ -6,7 +6,9 @@ require('dotenv').config(); // Load environment variables from .env file
 const { graphqlHTTP } = require('express-graphql');
 
 const { schema, schema2, schema3 } = require('./controllers/nurseController');
-
+const registerRoute = require('./routes/registerRoute');
+const loginRoute = require('./routes/loginRoute');
+const logoutRoute = require('./routes/logoutRoute');
 const app = express();
 
 app.use(bodyParser.json());
@@ -35,6 +37,10 @@ app.use('/graphql2', graphqlHTTP({
     schema: schema3,
     graphiql: true // Enable GraphiQL interface for testing in browser
 }));
+
+app.use(process.env.REGISTER_API, registerRoute);
+app.use(process.env.REGISTER_API, loginRoute);
+app.use(process.env.REGISTER_API, logoutRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
