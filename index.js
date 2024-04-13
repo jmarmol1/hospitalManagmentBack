@@ -5,6 +5,7 @@ require('dotenv').config(); // Load environment variables from .env file
 
 const registerRoute = require('./routes/registerRoute');
 const loginRoute = require('./routes/loginRoute');
+const logoutRoute = require('./routes/logoutRoute');
 
 const app = express();
 
@@ -22,6 +23,7 @@ mongoose.connect(process.env.MONGODB_URL, {
 
 app.use(process.env.REGISTER_API, registerRoute);
 app.use(process.env.REGISTER_API, loginRoute);
+app.use(process.env.REGISTER_API, logoutRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
