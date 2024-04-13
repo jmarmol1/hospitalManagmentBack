@@ -3,14 +3,13 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config(); // Load environment variables from .env file
 
-const userRoutes = require('./routes/userRoute'); // Import userRoutes file
+const registerRoute = require('./routes/registerRoute');
+const loginRoute = require('./routes/loginRoute');
 
 const app = express();
 
-// Middleware
 app.use(bodyParser.json());
 
-// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -21,10 +20,9 @@ mongoose.connect(process.env.MONGODB_URL, {
     process.exit(1);
 });
 
-// Use userRoutes
-app.use(process.env.REGISTER_API, userRoutes); // Prefix all routes defined in userRoutes with /api/users
+app.use(process.env.REGISTER_API, registerRoute);
+app.use(process.env.REGISTER_API, loginRoute);
 
-// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
