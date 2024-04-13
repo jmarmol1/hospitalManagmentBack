@@ -8,10 +8,10 @@ function generateToken(user) {
     return jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 }
 
-// Endpoint for user registration
+
 router.post('/register', async (req, res) => {
-    // Registration logic
-    const { firstName, lastName, password, email, userType } = req.body;
+  
+    const { firstName, lastName, password, email, userType,vitalSigns,commonSigns} = req.body;
 
     try {
         let UserModel;
@@ -26,17 +26,19 @@ router.post('/register', async (req, res) => {
                 return res.status(400).json({ message: 'Invalid user type' });
         }
 
-        // Using create function to directly create and save the user
+       
         const user = new UserModel({
             firstName,
             lastName,
             password,
-            email
+            email,
+            vitalSigns,
+            commonSigns
         });
 
         await user.save();
         
-        // If registration successful, generate JWT token
+        
         const token = generateToken(user);
         
         res.cookie('jwt', token, {httpOnly: true, maxAge: 3*24*60*60*1000})

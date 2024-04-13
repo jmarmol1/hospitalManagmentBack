@@ -10,7 +10,7 @@ function generateToken(user) {
 }
 
 router.post('/login/nurse', async (req, res) => {
-    // Nurse login logic
+   
     const { email, password } = req.body;
 
     try {
@@ -20,14 +20,14 @@ router.post('/login/nurse', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Compare hashed password from database with hashed password provided during login
+        
         const isPasswordMatch = await bcrypt.compare(password, nurse.password);
 
         if (!isPasswordMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // If login successful
+        
         const token = generateToken(nurse);
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 24 * 60 * 60 * 1000 })
         res.status(200).json({ message: 'Nurse login successful', token });
@@ -37,9 +37,9 @@ router.post('/login/nurse', async (req, res) => {
     }
 });
 
-// Endpoint for patient login
+
 router.post('/login/patient', async (req, res) => {
-    // Patient login logic
+    
     const { email, password } = req.body;
 
     try {
@@ -49,13 +49,13 @@ router.post('/login/patient', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Check if the provided password matches the hashed password in the database
+       
         const passwordMatch = await bcrypt.compare(password, patient.password);
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // If login successful
+       
         const token = generateToken(patient);
         res.status(200).json({ message: 'Patient login successful', token });
     } catch (error) {

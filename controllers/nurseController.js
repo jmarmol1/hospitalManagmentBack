@@ -1,9 +1,9 @@
 require('dotenv').config();
 const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInputObjectType, GraphQLID } = require('graphql');
-const { PatientModel } = require('./models');
+const PatientModel = require('../models/Patient');
 const { GraphQLBoolean } = require('graphql');
 
-// GraphQL schema
+
 const VitalSignInputType = new GraphQLInputObjectType({
   name: 'VitalSignInput',
   fields: {
@@ -95,10 +95,58 @@ const CommonSignsInputType = new GraphQLInputObjectType({
     })
   });
 
+
+  const VitalSignType = new GraphQLObjectType({
+    name: 'VitalSign',
+    fields: {
+      bodyTemperature: { type: GraphQLString },
+      heartRate: { type: GraphQLString },
+      bloodPressure: { type: GraphQLString },
+      respiratoryRate: { type: GraphQLString },
+      date: { type: GraphQLString }
+    }
+  });
+  
+  const QueryType = new GraphQLObjectType({
+    name: 'Query',
+    fields: {
+      getVitalSigns: {
+        type: new GraphQLList(VitalSignType),
+        description: 'Get vital signs of a patient by patient ID',
+        args: {
+          patientId: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: async (_, { patientId }) => {
+          try {
+            const patient = await PatientModel.findById(patientId);
+            if (!patient) {
+              throw new Error('Patient not found');
+            }
+            return patient.vitalSigns;
+          } catch (error) {
+            console.error(error);
+            throw new Error('Error retrieving vital signs');
+          }
+        }
+      }
+    }
+  });
+  
+  
 const schema = new GraphQLSchema({
-  mutation: MutationType
+  mutation: MutationType,
 });
 
 const schema2 = new GraphQLSchema({
     mutation: MutationType2
   });
+
+  const schema3 = new GraphQLSchema({
+    query: QueryType
+  });
+
+module.exports = {
+  schema,
+  schema2,
+  schema3
+};
