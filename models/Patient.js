@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const PatientSchema = new mongoose.Schema({
     firstName: String,
@@ -18,8 +19,13 @@ const PatientSchema = new mongoose.Schema({
         fatigue: Boolean,
         headache: Boolean,
         bodyAche:Boolean
-
     }
+});
+
+PatientSchema.pre('save', async function(next){
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
 const PatientModel = mongoose.model('patients', PatientSchema);
