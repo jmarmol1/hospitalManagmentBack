@@ -7,6 +7,10 @@ const registerRoute = require('./routes/registerRoute');
 const loginRoute = require('./routes/loginRoute');
 const logoutRoute = require('./routes/logoutRoute');
 
+const { graphqlHTTP } = require('express-graphql');
+
+const { schema, schema2, schema3 } = require('./controllers/nurseController');
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -24,6 +28,13 @@ mongoose.connect(process.env.MONGODB_URL, {
 app.use(process.env.REGISTER_API, registerRoute);
 app.use(process.env.REGISTER_API, loginRoute);
 app.use(process.env.REGISTER_API, logoutRoute);
+
+
+app.use('/graphql', graphqlHTTP({
+    schema: schema3,
+    graphiql: true
+  }));
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
