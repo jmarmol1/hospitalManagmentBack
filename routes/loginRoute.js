@@ -30,7 +30,7 @@ router.post('/login/nurse', async (req, res) => {
         
         const token = generateToken(nurse);
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 24 * 60 * 60 * 1000 })
-        res.status(200).json({ message: 'Nurse login successful', token });
+        res.status(200).json({ message: 'Nurse login successful', token, nurse});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -57,7 +57,7 @@ router.post('/login/patient', async (req, res) => {
 
        
         const token = generateToken(patient);
-        res.status(200).json({ message: 'Patient login successful', token });
+        res.status(200).json({ message: 'Patient login successful', token, patient });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });

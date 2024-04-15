@@ -33,7 +33,7 @@ const CommonSignsInputType = new GraphQLInputObjectType({
   }
 });
 
-// Define GraphQL object types
+
 const VitalSignType = new GraphQLObjectType({
   name: 'VitalSign',
   fields: {
@@ -45,32 +45,31 @@ const VitalSignType = new GraphQLObjectType({
   }
 });
 
-const MutationType = new GraphQLObjectType({
-  name: 'Mutation',
+const CommonSignsType = new GraphQLObjectType({
+  name: 'CommonSigns',
   fields: {
-    addVitalSignsToPatient: {
-      type: GraphQLString,
-      description: 'Add vital signs to a patient',
-      args: {
-        patientId: { type: GraphQLNonNull(GraphQLID) },
-        vitalSigns: { type: GraphQLNonNull(VitalSignInputType) }
-      },
-      resolve: async (_, { patientId, vitalSigns }) => {
-        try {
-          await PatientModel.findByIdAndUpdate(patientId, {
-            $push: { vitalSigns }
-          });
-          return 'Vital signs added successfully';
-        } catch (error) {
-          console.error(error);
-          throw new Error('Error adding vital signs');
-        }
-      }
-    }
+    fever: { type: GraphQLNonNull(GraphQLBoolean) },
+    cough: { type: GraphQLNonNull(GraphQLBoolean) },
+    fatigue: { type: GraphQLNonNull(GraphQLBoolean) },
+    headache: { type: GraphQLNonNull(GraphQLBoolean) },
+    bodyAche: { type: GraphQLNonNull(GraphQLBoolean) }
   }
 });
 
-const MutationType2 = new GraphQLObjectType({
+const PatientType = new GraphQLObjectType({
+  name: 'Patient',
+  fields: {
+    _id: { type: GraphQLNonNull(GraphQLID) },
+    firstName: { type: GraphQLNonNull(GraphQLString) },
+    lastName: { type: GraphQLNonNull(GraphQLString) },
+    email: { type: GraphQLNonNull(GraphQLString) },
+    vitalSigns: { type: new GraphQLList(VitalSignType) },
+    commonSigns: { type: GraphQLNonNull(CommonSignsType) }
+  }
+});
+
+
+const MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     addVitalSignsToPatient: {
@@ -117,8 +116,8 @@ const MutationType2 = new GraphQLObjectType({
 const QueryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
-    getVitalSigns: {
-      type: new GraphQLList(VitalSignType),
+    getPatientDetails: {
+      type: PatientType,
       description: 'Get vital signs of a patient by patient ID',
       args: {
         patientId: { type: GraphQLNonNull(GraphQLID) }
@@ -129,10 +128,22 @@ const QueryType = new GraphQLObjectType({
           if (!patient) {
             throw new Error('Patient not found');
           }
-          return patient.vitalSigns;
+          return patient;
         } catch (error) {
           console.error(error);
           throw new Error('Error retrieving vital signs');
+        }
+      }
+    },
+    getAllPatients: {
+      type: new GraphQLList(PatientType),
+      description: 'Get all patients in the database',
+      resolve: async () => {
+        try {
+          return await PatientModel.find({});
+        } catch (error) {
+          console.error(error);
+          throw new Error('Error retrieving patients');
         }
       }
     }
@@ -145,17 +156,7 @@ const schema = new GraphQLSchema({
   query: QueryType 
 });
 
-const schema2 = new GraphQLSchema({
-  mutation: MutationType2,
-  query: QueryType 
-});
-
-const schema3 = new GraphQLSchema({
-  query: QueryType 
-});
 
 module.exports = {
-  schema,
-  schema2,
-  schema3
+  schema
 };
