@@ -2,16 +2,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config(); // Load environment variables from .env file
+const cors = require('cors');
 
 const { graphqlHTTP } = require('express-graphql');
 
-const { schema, schema2, schema3 } = require('./controllers/nurseController');
+const { schema } = require('./controllers/nurseController');
 const registerRoute = require('./routes/registerRoute');
 const loginRoute = require('./routes/loginRoute');
 const logoutRoute = require('./routes/logoutRoute');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors({
+    origin: process.env.APP,
+}));
 
 mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
@@ -25,16 +29,6 @@ mongoose.connect(process.env.MONGODB_URL, {
 
 app.use('/graphql', graphqlHTTP({
     schema: schema,
-    graphiql: true // Enable GraphiQL interface for testing in browser
-}));
-
-app.use('/graphql1', graphqlHTTP({
-    schema: schema2,
-    graphiql: true // Enable GraphiQL interface for testing in browser
-}));
-
-app.use('/graphql2', graphqlHTTP({
-    schema: schema3,
     graphiql: true // Enable GraphiQL interface for testing in browser
 }));
 
